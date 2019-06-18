@@ -1,0 +1,224 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package nu.xom;
+
+import java.io.Writer;
+
+class ISOCyrillicWriter extends TextWriter {
+    ISOCyrillicWriter(Writer var1, String var2) {
+        super(var1, var2);
+    }
+
+    boolean needsEscaping(char var1) {
+        if (var1 <= 160) {
+            return false;
+        } else {
+            switch(var1) {
+                case 'Ё':
+                    return false;
+                case 'Ђ':
+                    return false;
+                case 'Ѓ':
+                    return false;
+                case 'Є':
+                    return false;
+                case 'Ѕ':
+                    return false;
+                case 'І':
+                    return false;
+                case 'Ї':
+                    return false;
+                case 'Ј':
+                    return false;
+                case 'Љ':
+                    return false;
+                case 'Њ':
+                    return false;
+                case 'Ћ':
+                    return false;
+                case 'Ќ':
+                    return false;
+                case 'Ѝ':
+                    return true;
+                case 'Ў':
+                    return false;
+                case 'Џ':
+                    return false;
+                case 'А':
+                    return false;
+                case 'Б':
+                    return false;
+                case 'В':
+                    return false;
+                case 'Г':
+                    return false;
+                case 'Д':
+                    return false;
+                case 'Е':
+                    return false;
+                case 'Ж':
+                    return false;
+                case 'З':
+                    return false;
+                case 'И':
+                    return false;
+                case 'Й':
+                    return false;
+                case 'К':
+                    return false;
+                case 'Л':
+                    return false;
+                case 'М':
+                    return false;
+                case 'Н':
+                    return false;
+                case 'О':
+                    return false;
+                case 'П':
+                    return false;
+                case 'Р':
+                    return false;
+                case 'С':
+                    return false;
+                case 'Т':
+                    return false;
+                case 'У':
+                    return false;
+                case 'Ф':
+                    return false;
+                case 'Х':
+                    return false;
+                case 'Ц':
+                    return false;
+                case 'Ч':
+                    return false;
+                case 'Ш':
+                    return false;
+                case 'Щ':
+                    return false;
+                case 'Ъ':
+                    return false;
+                case 'Ы':
+                    return false;
+                case 'Ь':
+                    return false;
+                case 'Э':
+                    return false;
+                case 'Ю':
+                    return false;
+                case 'Я':
+                    return false;
+                case 'а':
+                    return false;
+                case 'б':
+                    return false;
+                case 'в':
+                    return false;
+                case 'г':
+                    return false;
+                case 'д':
+                    return false;
+                case 'е':
+                    return false;
+                case 'ж':
+                    return false;
+                case 'з':
+                    return false;
+                case 'и':
+                    return false;
+                case 'й':
+                    return false;
+                case 'к':
+                    return false;
+                case 'л':
+                    return false;
+                case 'м':
+                    return false;
+                case 'н':
+                    return false;
+                case 'о':
+                    return false;
+                case 'п':
+                    return false;
+                case 'р':
+                    return false;
+                case 'с':
+                    return false;
+                case 'т':
+                    return false;
+                case 'у':
+                    return false;
+                case 'ф':
+                    return false;
+                case 'х':
+                    return false;
+                case 'ц':
+                    return false;
+                case 'ч':
+                    return false;
+                case 'ш':
+                    return false;
+                case 'щ':
+                    return false;
+                case 'ъ':
+                    return false;
+                case 'ы':
+                    return false;
+                case 'ь':
+                    return false;
+                case 'э':
+                    return false;
+                case 'ю':
+                    return false;
+                case 'я':
+                    return false;
+                case 'ѐ':
+                    return true;
+                case 'ё':
+                    return false;
+                case 'ђ':
+                    return false;
+                case 'ѓ':
+                    return false;
+                case 'є':
+                    return false;
+                case 'ѕ':
+                    return false;
+                case 'і':
+                    return false;
+                case 'ї':
+                    return false;
+                case 'ј':
+                    return false;
+                case 'љ':
+                    return false;
+                case 'њ':
+                    return false;
+                case 'ћ':
+                    return false;
+                case 'ќ':
+                    return false;
+                case 'ѝ':
+                    return true;
+                case 'ў':
+                    return false;
+                case 'џ':
+                    return false;
+                default:
+                    switch(var1) {
+                        case '§':
+                            return false;
+                        case '\u00ad':
+                            return false;
+                        case '№':
+                            return false;
+                        default:
+                            return true;
+                    }
+            }
+        }
+    }
+}
