@@ -16,6 +16,6 @@ mybatis:
   #type-aliases-package: com.ocean.pojo
   configuration:
     map-underscore-to-camel-case: true
-logging.config=D:\\testjar\\config\\logback.xml  指定加载文件
-logging:
-  config: \\usr\\local
+#logging.config=D:\\testjar\\config\\logback.xml  指定加载文件
+#logging:
+#  config: \\usr\\local
