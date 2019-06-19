@@ -1,6 +1,6 @@
 package com.iot.controller;
 
-import com.iot.service.interfaces.IBusinessService;
+import com.iot.service.interfaces.IOrderService;
 import com.iot.util.RequestMessageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,24 +15,24 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 拓展的业务
+ * 订单业务
  * @author lushusheng
  * @date 2019-06-18
  * @description
  */
 @RestController
-@RequestMapping("/business")
+@RequestMapping("/order")
 @RequiredArgsConstructor
 @Slf4j
-public class BusinessController {
+public class OrderController {
 
     //private static final Log logger = LogFactory.getLog(BusinessController.class);
     private final HttpServletRequest request;
     private final HttpServletResponse response;
-    private final IBusinessService businessService;
+    private final IOrderService orderService;
 
     @PostMapping("/handle")
-    public String businessHandle() {
+    public String orderHandle() {
 
         String requestMessage = "";
         try {
@@ -48,7 +48,7 @@ public class BusinessController {
                 log.error("Protocol Version不匹配（协议版本需要6以上），退出！");
                 return null;
             }
-            String retData = businessService.handle(requestMessage);
+            String retData = orderService.handle(requestMessage);
             return retData;
         }catch (Exception ex) {
             log.error("接口调用异常！", ex);
@@ -62,7 +62,7 @@ public class BusinessController {
      * @throws IOException
      */
     private boolean checkProtocolVersionAndBipReq(String requestMessage)throws Exception{
-
+        //这里根据请求信息判断协议版本号是否为6及以上
         return true;
     }
 }

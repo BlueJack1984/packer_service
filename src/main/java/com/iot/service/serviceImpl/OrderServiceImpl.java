@@ -1,7 +1,7 @@
 package com.iot.service.serviceImpl;
 
 import com.iot.otaBean.mo.BaseMo;
-import com.iot.service.interfaces.IBusinessService;
+import com.iot.service.interfaces.IOrderService;
 import com.iot.service.interfaces.USSDPackService;
 import com.iot.service.interfaces.USSDUnpackService;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
- * @description 业务扩展
+ * @description 订单业务扩展
  * @author lushusheng
  * @date 2019-06-18
  */
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class BusinessServiceImpl implements IBusinessService {
+public class OrderServiceImpl implements IOrderService {
 
     private final USSDUnpackService ussdUnpackService;
     private final USSDPackService ussdBusiServicePack;
