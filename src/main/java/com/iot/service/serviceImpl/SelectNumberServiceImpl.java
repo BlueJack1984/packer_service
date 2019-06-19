@@ -71,6 +71,10 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         plainDatas = getPlainDatasObj(getOtaTradeNo(), primaryResourceNumber, positionMo, deviceInitRec);
         mtData.setPlainDatas(plainDatas);
         //mtData.
+        mtData.setBusiType(positionMo.getBusiType());
+        mtData.setKeyIndex(positionMo.getKeyIndex());
+        mtData.setCheckNum(positionMo.getCheckNum());
+        mtData.setManuFlag(positionMo.getManuFlag());
         return mtData;
     }
     private List<PlainDataMt> getPlainDatasObj(String tradeNo, PrimaryResourceNumber primaryResourceNumber,

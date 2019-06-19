@@ -24,7 +24,7 @@ import java.io.IOException;
 @RequestMapping("/order")
 @RequiredArgsConstructor
 @Slf4j
-public class OrderController {
+public class LUController {
 
     //private static final Log logger = LogFactory.getLog(BusinessController.class);
     private final HttpServletRequest request;
