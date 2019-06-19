@@ -97,8 +97,9 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         //选订单
         AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
         //选号码
-        plainDatas.add(selectLocalNumber(assetOrder, positionMo, deviceInitRec));
-
+        if(null != assetOrder) {
+            plainDatas.add(selectLocalNumber(assetOrder, positionMo, deviceInitRec));
+        }
         return plainDatas;
     }
 
