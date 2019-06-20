@@ -10,6 +10,7 @@ import com.iot.otaBean.mo.RecieveDataPorMo;
 import com.iot.otaBean.mt.*;
 import com.iot.service.interfaces.USSDPackService;
 import com.iot.util.JsonUtil;
+import com.iot.util.ResourceUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class USSDPackServiceImpl implements USSDPackService {
             if(plainDataMt.getCmdType().equals("33")){
                 CmdParamData cmdParamData = (CmdParamData) plainDataMt.getCmdParams();
                 deliverData = cmdParamData.getOtaTradeNo() +
-                        cmdParamData.getCallControl() +
+                        (null == cmdParamData.getCallControl() ? "03" : cmdParamData.getCallControl()) +
                         cmdParamData.getpIccid();
                 CascadePushCommandCMD cascadePushCommandCMD = null;
                 for(int j = 0; j < cmdParamData.getCmds().size(); j++){
@@ -51,15 +52,20 @@ public class USSDPackServiceImpl implements USSDPackService {
                 userData += plainDataMt.getCmdType() + getStrLength(deliverData) + deliverData;
             }else if(plainDataMt.getCmdType().equals("31") || plainDataMt.getCmdType().equals("32")){
                 CmdParamData cmdParamData = (CmdParamData) plainDataMt.getCmdParams();
+                //处理国家码 added by lushusheng
+                String bitMapMcc = "";
+                if(null != cmdParamData.getCoverMcc()) {
+                    bitMapMcc = ResourceUtil.genMccBitMap(cmdParamData.getCoverMcc());
+                }
                 deliverData = cmdParamData.getOtaTradeNo() +
-                        cmdParamData.getCallControl() +
+                        (null == cmdParamData.getCallControl() ? "03" : cmdParamData.getCallControl()) +
                         cmdParamData.getOldIccid() +
                         cmdParamData.getImsi() +
                         cmdParamData.getAlgFlag()+
                         cmdParamData.getDataKeyIndex() +
                         cmdParamData.getKeyData() +
                         organizeData(cmdParamData.getExpTime()) +
-                        organizeData(cmdParamData.getCoverMcc()) +
+                        organizeData(bitMapMcc) +
                         organizeData(cmdParamData.getUssdPrefix()) +
                         organizeData(cmdParamData.getNewIccid()) +
                         organizeData(cmdParamData.getApn()) +
