@@ -72,7 +72,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         mtData.setPlainDatas(plainDatas);
         //mtData.
         mtData.setBusiType(positionMo.getBusiType());
-        mtData.setKeyIndex(positionMo.getKeyIndex());
+        mtData.setKeyIndex("0" + positionMo.getKeyIndex());
         mtData.setCheckNum(positionMo.getCheckNum());
         mtData.setManuFlag(positionMo.getManuFlag());
         return mtData;
@@ -117,7 +117,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         cmdParamData.setOldIccid(positionMo.getpIccid());
         cmdParamData.setNewIccid(deviceInitRec.getNumberIccid());
         cmdParamData.setpIccid(positionMo.getpIccid());
-        cmdParamData.setImsi(imsi);
+        cmdParamData.setImsi(ResourceUtil.getEfImsi(primaryResourceNumber,imsi));
         cmdParamData.setDataKeyIndex(positionMo.getKeyIndex());
         cmdParamData.setCallControl(primaryResourceNumber.getCallFlag());
         List<PrimaryResourceImsi> pris = primaryResourceImsiDao.queryPriByIccidAndImsi(

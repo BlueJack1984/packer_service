@@ -57,6 +57,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                 if(null != cmdParamData.getCoverMcc()) {
                     bitMapMcc = ResourceUtil.genMccBitMap(cmdParamData.getCoverMcc());
                 }
+                String apn = ResourceUtil.changeApn(cmdParamData.getApn());
                 deliverData = cmdParamData.getOtaTradeNo() +
                         (null == cmdParamData.getCallControl() ? "03" : cmdParamData.getCallControl()) +
                         cmdParamData.getOldIccid() +
@@ -68,7 +69,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                         organizeData(bitMapMcc) +
                         organizeData(cmdParamData.getUssdPrefix()) +
                         organizeData(cmdParamData.getNewIccid()) +
-                        organizeData(cmdParamData.getApn()) +
+                        organizeData(apn) +
                         organizeData(cmdParamData.getSca()) +
                         organizeData(cmdParamData.getTelData()) +
                         organizeData(cmdParamData.getPlmn()) +
