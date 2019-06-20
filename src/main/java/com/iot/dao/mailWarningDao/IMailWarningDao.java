@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public interface IMailWarningDao {
     /**
      * 查询发件人列表,email集合字符串
-     * @param eventId
+     * @param eventCode
      */
     public String queryEmails(String eventCode);
 
