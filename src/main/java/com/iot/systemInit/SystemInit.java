@@ -10,11 +10,14 @@ import com.iot.ota.dao.interf.IMccBitMapDao;
 import com.iot.ota.jmsQueue.MoMsgConsumer;
 import com.iot.ota.util.StaticLoggerUtils;*/
 import com.iot.constant.SysConstants;
+import com.iot.dao.IPmnIndexDao.IPlmnIndexDao;
 import com.iot.dao.manufacturerKeyDao.IManufacturerKeyDao;
 import com.iot.dao.mccBitMapDao.IMccBitMapDao;
+import com.iot.dao.plmnIndexDao.IPlmnIndexDao;
 import com.iot.otaBean.manufacturerEnmu.ManufacturerEnmu;
 import com.iot.otaBean.manufacturerKey.ManufacturerKey;
 import com.iot.otaBean.mccBitMap.MccBitMap;
+import com.iot.otaBean.plmn.PlmnIndex;
 import com.iot.util.KeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -43,12 +46,18 @@ public class SystemInit implements ApplicationRunner {
 	@Autowired
 	private IMccBitMapDao mccBitMapDao;
 
+	@Autowired
+	private IPlmnIndexDao plmnIndexDao;
+
 	@Override
 	public void run(ApplicationArguments applicationArguments) throws Exception {
 
 		for (MccBitMap bitMap : mccBitMapDao.getAllMccBitMap()) {
 			SysConstants.MCC_BIT_MAP.put(bitMap.getMcc(),
 					bitMap.getBitmapCode());
+		}
+		for (PlmnIndex plmnIndex : plmnIndexDao.getAllPlmnIndex()) {
+			SysConstants.PLMN_INDEX_MAP.put(plmnIndex.getPlmn(),plmnIndex);
 		}
 		// 获取卡片通信密钥
 		String otaKeyManuCode = "";

@@ -1,5 +1,7 @@
 package com.iot.constant;
 
+import com.iot.otaBean.plmn.PlmnIndex;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,6 +82,7 @@ public class SysConstants {
 	public static Map<String, String[]> PERS_DATA_KEY = new HashMap<String, String[]>();
 
 	public static Map<String, String> MCC_BIT_MAP = new HashMap<String, String>();
+	public static Map<String, PlmnIndex> PLMN_INDEX_MAP = new HashMap<String, PlmnIndex>();
 
 	// ota交易 重新处理前等待时间阈值（分钟）
 	// public static int OTA_TRADE_REDEAL_MINUTE = -1;
