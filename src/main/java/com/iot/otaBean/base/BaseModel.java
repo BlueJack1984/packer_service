@@ -1,4 +1,4 @@
-package com.iot.otaBean.AAC;
+package com.iot.otaBean.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

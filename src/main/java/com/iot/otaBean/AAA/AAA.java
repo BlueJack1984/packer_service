@@ -1,6 +1,6 @@
 package com.iot.otaBean.AAA;
 
-import com.iot.otaBean.AAC.BaseModel;
+import com.iot.otaBean.base.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
