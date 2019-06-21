@@ -336,7 +336,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
     @Value("utf-8")
     private String orderCharset;
     /**为OTA设备的副号套餐订单选择副号*/
-    @Value("http\\://47.52.192.207\\:6035/orderSys/selectLocalSoftSim")
+    @Value("http://47.52.192.207:6035/orderSys/startOtaDeviceOrder")
     private String selectSoftsimUrl;
     public SelectLocalSoftSimResponse selectLocalSoftSim(String orderCode,String curPostion) {
         //组装请求报文
