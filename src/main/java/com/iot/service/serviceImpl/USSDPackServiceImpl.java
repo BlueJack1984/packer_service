@@ -72,7 +72,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                         organizeData(apn) +
                         organizeData(cmdParamData.getSca()) +
                         organizeData(cmdParamData.getTelData()) +
-                        organizeData(cmdParamData.getPlmn()) +
+                        organizeData1(cmdParamData.getPlmn()) +
                         organizeData(cmdParamData.getBipParam()) +
                         organizeData(cmdParamData.getFplmn());
                 userData += plainDataMt.getCmdType() + getStrLength(deliverData) +deliverData;
@@ -85,7 +85,7 @@ public class USSDPackServiceImpl implements USSDPackService {
         cipherdata = "0" + mtData.getBusiType() + mtData.getKeyIndex() + cipherdata;
         String len = getStrLength(cipherdata + "00000000"); //"00000000"补充MAC的4个字节
         cipherdata = len + cipherdata;
-        String cipherdataMAC = DESCrypto.des_cbc_decrypt(key, cipherdata, HexIV);
+        String cipherdataMAC = DESCrypto.des_cbc_encrypt(key, cipherdata, HexIV);
         cipherdataLen = cipherdataMAC.length();
         MAC = cipherdataMAC.substring((cipherdataLen - 8), cipherdataLen);
         SMS = cipherdata + MAC;
@@ -118,6 +118,14 @@ public class USSDPackServiceImpl implements USSDPackService {
                 strLen = getStrLength(str);
             }
             return (strLen + str);
+        }
+    }
+    private String organizeData1(String str){
+        String strLen = null;
+        if((null == str) || ("".equals(str))){
+            return "00";
+        }else {
+            return str;
         }
     }
 }

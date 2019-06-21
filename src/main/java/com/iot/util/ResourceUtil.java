@@ -236,6 +236,9 @@ public class ResourceUtil {
 		int[] bc = new int[240];
 		for (String s : orderMccList) {
 			String mccCode = SysConstants.MCC_BIT_MAP.get(s);
+			if(null == mccCode) {
+				continue;
+			}
 			bc[Integer.parseInt(mccCode) - 1] = 1;
 		}
 		List<Integer> bitMapList = new ArrayList<>();
