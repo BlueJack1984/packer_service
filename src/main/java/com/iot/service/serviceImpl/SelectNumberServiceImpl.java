@@ -144,7 +144,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         }else{
             plmn="";
         }
-        cmdParamData.setPlmn(plmn);
+        cmdParamData.setPlmn(ResourceUtil.generatePLMNIndexList(plmn, pri.getCoverCountry()));
         String dataKeyIndex = "0" + (new Random().nextInt(5) + 1);
         cmdParamData.setDataKeyIndex(dataKeyIndex);
         String deKI = KeyUtil.decryptKIorOPC(
