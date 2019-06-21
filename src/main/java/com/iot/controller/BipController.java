@@ -40,6 +40,7 @@ public class BipController {
                 return null;
             }
             retData = bipMsgHandleService.bipMsgHandleService(reqStr);
+            logger.info("**************下行报文：" + retData);
             return retData;
         } catch (Exception e) {
             logger.error("接口调用异常！", e);
