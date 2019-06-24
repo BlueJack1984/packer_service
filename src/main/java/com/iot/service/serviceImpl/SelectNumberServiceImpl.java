@@ -200,7 +200,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.info("调用选择副号接口错误，未返回副号信息");
             return null;
         }
-        List<SoftSimResourceInfo> softSimResourceInfos = softSimResourceInfoDao.querySoftsimByIccid(positionMo.getpIccid());
+        List<SoftSimResourceInfo> softSimResourceInfos = softSimResourceInfoDao.querySoftsimByIccid(response.getRespData().getSimIccid());
         if(1 != softSimResourceInfos.size()){
             logger.error("iccid为" + positionMo.getpIccid() + "的资源多于1个或者不存在！");
             return null;
@@ -220,11 +220,11 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         cmdParamData.setOldIccid(positionMo.getpIccid());
         cmdParamData.setNewIccid(deviceInitRec.getNumberIccid());
         cmdParamData.setpIccid(positionMo.getpIccid());
-        cmdParamData.setImsi(imsi);
+        cmdParamData.setImsi(ResourceUtil.getEfImsi(softSimResourceInfo,imsi));
         cmdParamData.setDataKeyIndex(positionMo.getKeyIndex());
         cmdParamData.setCallControl(softSimResourceInfo.getCallFlag());
         List<SoftSimResourceImsi> softSimResourceImsis = softSimResourceImsiDao.querySoftsimResourceImsi(
-                positionMo.getpIccid(), imsi);
+                softSimResourceInfo.getIccid(), imsi);
         if(1 != softSimResourceImsis.size()){
             logger.error("iccid为"+softSimResourceInfo.getIccid()+"imsi为"+imsi+"的主号多于一个或者不存在！");
             return null;
@@ -247,7 +247,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         }else{
             plmn="";
         }
-        cmdParamData.setPlmn(plmn);
+        cmdParamData.setPlmn(ResourceUtil.generatePLMNIndexList(plmn, softSimResourceImsi.getCoverCountry()));
         String dataKeyIndex = "0" + (new Random().nextInt(5) + 1);
         cmdParamData.setDataKeyIndex(dataKeyIndex);
         String deKI = KeyUtil.decryptKIorOPC(
