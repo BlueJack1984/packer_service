@@ -149,7 +149,7 @@ public class PositionMo extends BaseMo {
 		return "PositionMo [checkNum=" + checkNum + ", positionInfo="
 				+ positionInfo + ", pIccid=" + pIccid + ", imei=" + imei
 				+ ", cellId=" + cellId + ", carryingCapacity="
-				+ carryingCapacity + "]";
+				+ carryingCapacity + ", imsi=" + imsi + "]";
 	}
 
 }

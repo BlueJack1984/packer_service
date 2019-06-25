@@ -284,7 +284,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         }
         String cmdStr = JsonUtil.getJSONString(cmdParamData);
         plainDataMt.setCmdParams(cmdParamData);
-        plainDataMt.setCmdType(CmdTypeEnum.UPDATEICCID_POR
+        plainDataMt.setCmdType(CmdTypeEnum.LOCALDATA_POR
                 .getCmdType());
         plainDataMt.setCmdLength(String.valueOf(cmdStr.length()));
         return plainDataMt;

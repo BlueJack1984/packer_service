@@ -108,7 +108,7 @@ public class BaseMo extends UssdMsgBean {
 				+ ", keyIndex=" + keyIndex + ", manuFlag=" + manuFlag
 				+ ", protocolVersion=" + protocolVersion + ", appletVersion="
 				+ appletVersion + ", cmdType=" + cmdType + ", cmdParam="
-				+ cmdParam + ", ussdSuffix=" + ussdSuffix + "]";
+				+ cmdParam + ", ussdSuffix=" + ussdSuffix +"]";
 	}
 
 	public UssdMsgBean getUssdMsgBean() {

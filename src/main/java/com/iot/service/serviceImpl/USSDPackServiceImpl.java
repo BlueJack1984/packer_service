@@ -40,7 +40,7 @@ public class USSDPackServiceImpl implements USSDPackService {
             if(plainDataMt.getCmdType().equals("33")){
                 CmdParamData cmdParamData = (CmdParamData) plainDataMt.getCmdParams();
                 deliverData = cmdParamData.getOtaTradeNo() +
-                        (null == cmdParamData.getCallControl() ? "03" : cmdParamData.getCallControl()) +
+                        organizeCallControll(cmdParamData.getCallControl()) +
                         cmdParamData.getpIccid();
                 CascadePushCommandCMD cascadePushCommandCMD = null;
                 for(int j = 0; j < cmdParamData.getCmds().size(); j++){
@@ -59,7 +59,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                 }
                 String apn = ResourceUtil.changeApn(cmdParamData.getApn());
                 deliverData = cmdParamData.getOtaTradeNo() +
-                        (null == cmdParamData.getCallControl() ? "03" : cmdParamData.getCallControl()) +
+                        organizeCallControll(cmdParamData.getCallControl()) +
                         cmdParamData.getOldIccid() +
                         cmdParamData.getImsi() +
                         cmdParamData.getAlgFlag()+
@@ -127,5 +127,13 @@ public class USSDPackServiceImpl implements USSDPackService {
         }else {
             return str;
         }
+    }
+
+    private String organizeCallControll(String callFlag) {
+//        if(null == callFlag || "".equals(callFlag) || "0".equals(callFlag) || "00".equals(callFlag)) {
+//            return "00";
+//        }
+//        return callFlag;
+        return "00";
     }
 }
