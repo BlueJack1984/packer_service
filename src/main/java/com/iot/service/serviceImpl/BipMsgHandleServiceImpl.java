@@ -53,6 +53,7 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
         if(baseMo.getCmdType().equals("31") || baseMo.getCmdType().equals("32")
                 || baseMo.getCmdType().equals("33")) {
             PorMo porMo = (PorMo) baseMo;
+            logger.info("Por上行消息：" + porMo.toString());
             List<DeviceInitRec> deviceInitRecs = deviceInitRecDao.queryInitRecByDeviceId(porMo.getImei());
             //检查上报信息
             if(!selectNumberService.checkMccAndDevice(null, deviceInitRecs)){

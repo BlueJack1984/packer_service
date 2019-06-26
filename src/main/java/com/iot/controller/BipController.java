@@ -41,6 +41,10 @@ public class BipController {
             }
             retData = bipMsgHandleService.bipMsgHandleService(reqStr);
             //添加batchNumber为0001，messageTotalNumber为01，currentMessageIndex为01，添加到首部
+            if(null == retData) {
+                logger.info("**************下行报文：null");
+                return null;
+            }
             retData = "00010101" + retData;
             logger.info("**************下行报文：" + retData);
             return retData;

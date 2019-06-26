@@ -3,12 +3,14 @@ package com.iot.service.serviceImpl;
 import com.iot.constant.SysConstants;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
 import com.iot.dao.assetOrderDao.IAssetOrderDao;
+import com.iot.dao.assetOrderSoftsimUsageDao.IAssetOrderSoftsimUsageDao;
 import com.iot.dao.primaryResourceImsiDao.IPrimaryResourceImsiDao;
 import com.iot.dao.primaryResourceNumberDao.IPrimaryResourceNumberDao;
 import com.iot.dao.softSimResourceImsiDao.ISoftSimResourceImsiDao;
 import com.iot.dao.softSimResourceInfoDao.ISoftSimResourceInfoDao;
 import com.iot.dao.supplierDao.ISupplierDao;
 import com.iot.otaBean.assetOrder.AssetOrder;
+import com.iot.otaBean.assetOrderSoftsimUsage.AssetOrderSoftsimUsage;
 import com.iot.otaBean.cmdTypeEnum.CmdTypeEnum;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.mo.PositionMo;
@@ -56,6 +58,9 @@ public class SelectNumberServiceImpl implements SelectNumberService {
     ISoftSimResourceImsiDao softSimResourceImsiDao;
     @Autowired
     SelectOrderService selectOrderService;
+    @Autowired
+    private IAssetOrderSoftsimUsageDao assetOrderSoftsimUsageDao;
+
     public MtData selectNumber(String tradeNo, String iccid, PositionMo positionMo, DeviceInitRec deviceInitRec) throws Exception {
         logger.info("组织主号下发短信！");
         MtData mtData = new MtData();
@@ -192,20 +197,37 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.info("assetOrder查询为空");
             return null;
         }
-        SelectLocalSoftSimResponse response = selectLocalSoftSim(assetOrder.getOrderId(),
-                positionMo.getMcc());
-        if(response == null || response.getError() == null || response.getRespData() == null || response.getRespData().getSimIccid() == null ||response.getRespData().getSimImsi() == null){
-            logger.info("调用选择副号接口错误，未返回副号信息");
+        //在这里添加判断逻辑
+        String simIccid = "";
+        String simImsi = "";
+        SelectLocalSoftSimResponse response = null;
+
+        List<AssetOrderSoftsimUsage> orderSoftsimUsageList = assetOrderSoftsimUsageDao.getList(positionMo.getImei(), assetOrder.getOrderId());
+        if(null == orderSoftsimUsageList || orderSoftsimUsageList.size() < 1) {
+            response = selectLocalSoftSim(assetOrder.getOrderId(), positionMo.getMcc());
+            if(response == null || response.getError() == null || response.getRespData() == null || response.getRespData().getSimIccid() == null ||response.getRespData().getSimImsi() == null){
+                logger.info("调用选择副号接口错误，未返回副号信息");
+                return null;
+            }
+            simIccid = response.getRespData().getSimIccid();
+            simImsi = response.getRespData().getSimImsi();
+        }else if(orderSoftsimUsageList.size() > 1){
+            logger.info("查询到的订单数量大于一个");
             return null;
+        }else {
+            AssetOrderSoftsimUsage assetOrderSoftsimUsage = orderSoftsimUsageList.get(0);
+            //response = selectLocalSoftSim(assetOrderSoftsimUsage.getOrderId(), assetOrderSoftsimUsage.getCoverMcc());
+            simIccid = assetOrderSoftsimUsage.getIccid();
+            simImsi = assetOrderSoftsimUsage.getImsi();
         }
-        List<SoftSimResourceInfo> softSimResourceInfos = softSimResourceInfoDao.querySoftsimByIccid(response.getRespData().getSimIccid());
+        List<SoftSimResourceInfo> softSimResourceInfos = softSimResourceInfoDao.querySoftsimByIccid(simIccid);
         if(1 != softSimResourceInfos.size()){
-            logger.error("iccid为" + positionMo.getpIccid() + "的资源多于1个或者不存在！");
+            logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
             return null;
         }
         //String tradeNo = getOtaTradeNo();
         PlainDataMt plainDataMt = getLocalPlainDataMtObj(tradeNo, softSimResourceInfos.get(0),
-                positionMo, response.getRespData().getSimImsi(), deviceInitRec);
+                positionMo, simImsi, deviceInitRec);
         return plainDataMt;
     }
     PlainDataMt getLocalPlainDataMtObj(String tradeNo, SoftSimResourceInfo softSimResourceInfo,

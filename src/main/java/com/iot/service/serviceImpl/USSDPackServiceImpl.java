@@ -11,6 +11,7 @@ import com.iot.otaBean.mt.*;
 import com.iot.service.interfaces.USSDPackService;
 import com.iot.util.JsonUtil;
 import com.iot.util.ResourceUtil;
+import com.packer.extension.convertor.ADNConvertor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class USSDPackServiceImpl implements USSDPackService {
         int cipherdataLen = 0;
         String MAC = null;
         String SMS = null;
+        //添加iccid转换器
+        ADNConvertor ascii = new ADNConvertor();
 
         for(int i = 0; i < plainDataMtList.size(); i++){
             plainDataMt = plainDataMtList.get(i);
@@ -60,7 +63,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                 String apn = ResourceUtil.changeApn(cmdParamData.getApn());
                 deliverData = cmdParamData.getOtaTradeNo() +
                         organizeCallControll(cmdParamData.getCallControl()) +
-                        cmdParamData.getOldIccid() +
+                        ascii.reconvert(cmdParamData.getOldIccid()) +
                         cmdParamData.getImsi() +
                         cmdParamData.getAlgFlag()+
                         cmdParamData.getDataKeyIndex() +
@@ -68,7 +71,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                         organizeData(cmdParamData.getExpTime()) +
                         organizeData(bitMapMcc) +
                         organizeData(cmdParamData.getUssdPrefix()) +
-                        organizeData(cmdParamData.getNewIccid()) +
+                        organizeData(checkNewIccid(cmdParamData.getNewIccid())) +
                         organizeData(apn) +
                         organizeData(cmdParamData.getSca()) +
                         organizeData(cmdParamData.getTelData()) +
@@ -135,5 +138,14 @@ public class USSDPackServiceImpl implements USSDPackService {
 //        }
 //        return callFlag;
         return "00";
+    }
+
+    private String checkNewIccid(String newIccid) {
+        ADNConvertor ascii = new ADNConvertor();
+        if(null == newIccid || "".equals(newIccid)) {
+            return "";
+        }else {
+            return ascii.reconvert(newIccid);
+        }
     }
 }
