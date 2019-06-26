@@ -32,11 +32,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -58,7 +56,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
     ISoftSimResourceImsiDao softSimResourceImsiDao;
     @Autowired
     SelectOrderService selectOrderService;
-    public MtData selectNumber(String iccid, PositionMo positionMo, DeviceInitRec deviceInitRec) throws Exception {
+    public MtData selectNumber(String tradeNo, String iccid, PositionMo positionMo, DeviceInitRec deviceInitRec) throws Exception {
         logger.info("组织主号下发短信！");
         MtData mtData = new MtData();
         List<PlainDataMt> plainDatas = new ArrayList<>();
@@ -68,7 +66,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             return null;
         }
         PrimaryResourceNumber primaryResourceNumber = primaryResourceNumbers.get(0);
-        plainDatas = getPlainDatasObj(getOtaTradeNo(), primaryResourceNumber, positionMo, deviceInitRec);
+        plainDatas = getPlainDatasObj(tradeNo, primaryResourceNumber, positionMo, deviceInitRec);
         mtData.setPlainDatas(plainDatas);
         //mtData.
         mtData.setBusiType(positionMo.getBusiType());
@@ -102,7 +100,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
         //选号码
         if(null != assetOrder) {
-            plainDatas.add(selectLocalNumber(assetOrder, positionMo, deviceInitRec));
+            plainDatas.add(selectLocalNumber(tradeNo, assetOrder, positionMo, deviceInitRec));
         }
         return plainDatas;
     }
@@ -187,7 +185,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         return plainDataMt;
     }
     //选择副号
-    public PlainDataMt selectLocalNumber(AssetOrder assetOrder, PositionMo positionMo,
+    public PlainDataMt selectLocalNumber(String tradeNo, AssetOrder assetOrder, PositionMo positionMo,
                                          DeviceInitRec deviceInitRec) throws Exception {
         logger.info(positionMo.getImei() + positionMo.getpIccid() + positionMo.getMsisdn() + "下发新副号");
         if(null == assetOrder) {
@@ -205,7 +203,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             logger.error("iccid为" + positionMo.getpIccid() + "的资源多于1个或者不存在！");
             return null;
         }
-        String tradeNo = getOtaTradeNo();
+        //String tradeNo = getOtaTradeNo();
         PlainDataMt plainDataMt = getLocalPlainDataMtObj(tradeNo, softSimResourceInfos.get(0),
                 positionMo, response.getRespData().getSimImsi(), deviceInitRec);
         return plainDataMt;
@@ -310,19 +308,19 @@ public class SelectNumberServiceImpl implements SelectNumberService {
      *
      * @return
      */
-    public String getOtaTradeNo() {
-        Long nextVal = assetManageBusiDao.getOtaTradeNo();
-        String tempId = Long.toString(nextVal);
-        if (tempId.length() > 6) {
-            tempId = tempId.substring(tempId.length() - 6, tempId.length());
-        } else {
-            tempId = StringUtil.paddingHeadZero(tempId, 6);
-        }
-
-        String sysTimeStr = DateUtils.format(new Date(), "yyyyMMddHHmmss");
-        String tradeId = sysTimeStr + tempId;
-        return tradeId;
-    }
+//    public String getOtaTradeNo() {
+//        Long nextVal = assetManageBusiDao.getOtaTradeNo();
+//        String tempId = Long.toString(nextVal);
+//        if (tempId.length() > 6) {
+//            tempId = tempId.substring(tempId.length() - 6, tempId.length());
+//        } else {
+//            tempId = StringUtil.paddingHeadZero(tempId, 6);
+//        }
+//
+//        String sysTimeStr = DateUtils.format(new Date(), "yyyyMMddHHmmss");
+//        String tradeId = sysTimeStr + tempId;
+//        return tradeId;
+//    }
 
     /**
      * 为OTA设备的副号套餐订单选择副号

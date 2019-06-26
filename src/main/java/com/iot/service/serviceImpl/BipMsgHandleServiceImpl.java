@@ -1,6 +1,7 @@
 package com.iot.service.serviceImpl;
 
 import com.iot.constant.SysConstants;
+import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
 import com.iot.dao.assetOrderDao.IAssetOrderDao;
 import com.iot.dao.deviceInitRecDao.IDeviceInitRecDao;
 import com.iot.otaBean.assetManageBusiTypeEnum.AssetManageBusiTypeEnum;
@@ -13,6 +14,7 @@ import com.iot.otaBean.mt.MtData;
 import com.iot.otaBean.mt.PlainDataMt;
 import com.iot.service.interfaces.*;
 import com.iot.util.DateUtils;
+import com.packer.commons.sms.util.StringUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,8 +42,13 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
     protected IAssetOrderDao assetOrderDao;
     @Autowired
     protected SelectOrderService selectOrderService;
+    @Autowired
+    private IAssetManageBusiDao assetManageBusiDao;
+
     public String bipMsgHandleService(String msg) throws Exception{
         String SMS = "";
+        //在这里把tradeNo抽取出来，保证主号副号一致
+        String tradeNo = getOtaTradeNo();
         BaseMo baseMo = ussdUnpackService.ussdBusiServiceUnpack(msg);
         if(baseMo.getCmdType().equals("31") || baseMo.getCmdType().equals("32")
                 || baseMo.getCmdType().equals("33")) {
@@ -84,7 +91,7 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
             if(positionMo.getpIccid().equals(deviceInitRec.getSeedIccid())){ //种子主号
                 if(deviceInitRec.getSoftsimType().equals("1")){ //种子主号下主号
                     logger.info("种子主号下主号");
-                    MtData mtData = selectNumberService.selectNumber(deviceInitRec.getIccid(),
+                    MtData mtData = selectNumberService.selectNumber(tradeNo, deviceInitRec.getIccid(),
                             positionMo, deviceInitRec);
                     SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
                     return SMS;
@@ -93,7 +100,7 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                     //选订单
                     AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
                     //选号码
-                    PlainDataMt plainDataMt = selectNumberService.selectLocalNumber(assetOrder, positionMo,
+                    PlainDataMt plainDataMt = selectNumberService.selectLocalNumber(tradeNo, assetOrder, positionMo,
                             deviceInitRec);
                     List<PlainDataMt> plainDatas = new ArrayList<>();
                     plainDatas.add(plainDataMt);
@@ -110,7 +117,7 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                 //选订单
                 AssetOrder assetOrder = selectOrderService.selectOrder(positionMo, deviceInitRec);
                 //选号码
-                PlainDataMt plainDataMt = selectNumberService.selectLocalNumber(assetOrder, positionMo,
+                PlainDataMt plainDataMt = selectNumberService.selectLocalNumber(tradeNo, assetOrder, positionMo,
                         deviceInitRec);
                 List<PlainDataMt> plainDatas = new ArrayList<>();
                 plainDatas.add(plainDataMt);
@@ -120,7 +127,7 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                 return SMS;
             }else {
                 logger.error("慧银处理种子主号下主号");
-                MtData mtData = selectNumberService.selectNumber(deviceInitRec.getIccid(),
+                MtData mtData = selectNumberService.selectNumber(tradeNo, deviceInitRec.getIccid(),
                         positionMo, deviceInitRec);
                 SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
                 return SMS;
@@ -161,5 +168,23 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
             sb.append(s + ";");
         }
         return sb.toString().substring(0, sb.length() - 1);
+    }
+    /**
+     * 生成ota交易流水号
+     *
+     * @return
+     */
+    public String getOtaTradeNo() {
+        Long nextVal = assetManageBusiDao.getOtaTradeNo();
+        String tempId = Long.toString(nextVal);
+        if (tempId.length() > 6) {
+            tempId = tempId.substring(tempId.length() - 6, tempId.length());
+        } else {
+            tempId = StringUtil.paddingHeadZero(tempId, 6);
+        }
+
+        String sysTimeStr = DateUtils.format(new Date(), "yyyyMMddHHmmss");
+        String tradeId = sysTimeStr + tempId;
+        return tradeId;
     }
 }

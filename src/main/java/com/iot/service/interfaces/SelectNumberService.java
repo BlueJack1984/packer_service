@@ -9,8 +9,8 @@ import com.iot.otaBean.mt.PlainDataMt;
 import java.util.List;
 
 public interface SelectNumberService {
-    public MtData  selectNumber(String iccid, PositionMo positionMo, DeviceInitRec deviceInitRec) throws Exception;
-    public PlainDataMt selectLocalNumber(AssetOrder assetOrder, PositionMo positionMo,
+    public MtData  selectNumber(String tradeNo, String iccid, PositionMo positionMo, DeviceInitRec deviceInitRec) throws Exception;
+    public PlainDataMt selectLocalNumber(String tradeNo, AssetOrder assetOrder, PositionMo positionMo,
                                          DeviceInitRec deviceInitRec) throws Exception;
     public boolean checkMccAndDevice(String mcc, List<DeviceInitRec> deviceInitRecs);
 }
