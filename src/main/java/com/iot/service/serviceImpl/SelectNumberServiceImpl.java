@@ -226,11 +226,11 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             return null;
         }
         //String tradeNo = getOtaTradeNo();
-        PlainDataMt plainDataMt = getLocalPlainDataMtObj(tradeNo, softSimResourceInfos.get(0),
+        PlainDataMt plainDataMt = getLocalPlainDataMtObj(assetOrder, tradeNo, softSimResourceInfos.get(0),
                 positionMo, simImsi, deviceInitRec);
         return plainDataMt;
     }
-    PlainDataMt getLocalPlainDataMtObj(String tradeNo, SoftSimResourceInfo softSimResourceInfo,
+    PlainDataMt getLocalPlainDataMtObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo,
                                        PositionMo positionMo, String imsi, DeviceInitRec deviceInitRec) throws Exception {
         String UssdPre = "";
         String plmn = "";
@@ -283,6 +283,15 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         String keyData = LF3DesCryptoUtil.ecb_encrypt(sessionKey, deKI + deOPC,
                 JceBase.Padding.NoPadding);
         cmdParamData.setKeyData(keyData);
+        //在这里添加副号的过期时间
+        String expTime = "";
+        if(assetOrder.getPlannedEndTime() != null && assetOrder.getPlannedEndTime().trim().length() > 0) {
+            expTime = assetOrder.getPlannedEndTime().replaceAll("-", "")
+                    .replaceAll(":", "").replaceAll(" ", "");
+        }else {
+            logger.info("订单预计结束时间为空");
+        }
+        cmdParamData.setExpTime(StringUtil.string2ADN(expTime));
         cmdParamData.setCoverMcc(softSimResourceImsi.getCoverCountry());
         cmdParamData.setApn(softSimResourceInfo.getApn());
         String[] bipIps = deviceInitRec.getBipIp().split("\\.");
@@ -318,7 +327,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
             return false;
         }
         //如果上报国家全F，发送同步时间参数短信
-        if(mcc.equals("FFF")){
+        if("FFF".equals(mcc)){
             logger.info("上报国家全F:" + mcc);
             return false;
         }

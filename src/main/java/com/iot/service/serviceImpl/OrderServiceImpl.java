@@ -1,6 +1,7 @@
 package com.iot.service.serviceImpl;
 
 import com.iot.otaBean.mo.BaseMo;
+import com.iot.otaBean.mt.MtData;
 import com.iot.service.interfaces.IOrderService;
 import com.iot.service.interfaces.USSDPackService;
 import com.iot.service.interfaces.USSDUnpackService;
@@ -26,11 +27,14 @@ public class OrderServiceImpl implements IOrderService {
      * @return
      */
     @Override
-    public String handle(String requestMessage) {
+    public String handle(String requestMessage) throws Exception{
         String sms = "";
         //解析request请求携带的信息requestMessage
         BaseMo baseMo = ussdUnpackService.ussdBusiServiceUnpack(requestMessage);
+        //业务逻辑处理
 
+        MtData mtData = null;
+        sms = ussdBusiServicePack.ussdBusiServicePack(mtData);
         return sms;
     }
 }

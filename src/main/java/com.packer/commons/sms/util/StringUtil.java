@@ -140,4 +140,61 @@ public class StringUtil {
             throw new IllegalArgumentException("data is null");
         }
     }
+
+
+    public static String adn2string(String numberInAdn) {
+        if (numberInAdn == null) {
+            throw new IllegalArgumentException("data is null");
+        } else if (numberInAdn.length() % 2 == 1) {
+            throw new IllegalArgumentException("the adn string's length can't be odd");
+        } else {
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < numberInAdn.length(); i += 2) {
+                String temp = numberInAdn.substring(i, i + 2);
+                sb.append(temp.charAt(1));
+                sb.append(temp.charAt(0));
+            }
+
+            return trimTail(sb.toString(), "F");
+        }
+    }
+    public static String trimTail(String str, String trim) {
+        return trimTail(str, trim, 0);
+    }
+    public static String trimTail(String str, String trim, int minLen) {
+        if (str != null && trim != null) {
+            if (str.length() != minLen && Assert.isEmpty(trim)) {
+                throw new IllegalArgumentException("the original string:" + str + " the minLen:" + minLen + " the trim:[" + trim + "]");
+            } else {
+                while(str.endsWith(trim) && str.length() > minLen) {
+                    str = str.substring(0, str.length() - trim.length());
+                }
+
+                return str;
+            }
+        } else {
+            throw new IllegalArgumentException("data is null");
+        }
+    }
+
+    public static String string2ADN(String numstr) {
+        if (numstr == null) {
+            throw new IllegalArgumentException("data is null");
+        } else {
+            if (numstr.length() % 2 == 1) {
+                numstr = numstr + "F";
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < numstr.length(); i += 2) {
+                String temp = numstr.substring(i, i + 2);
+                sb.append(temp.charAt(1));
+                sb.append(temp.charAt(0));
+            }
+
+            return sb.toString();
+        }
+    }
 }

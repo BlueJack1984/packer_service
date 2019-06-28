@@ -40,7 +40,7 @@ public class USSDPackServiceImpl implements USSDPackService {
 
         for(int i = 0; i < plainDataMtList.size(); i++){
             plainDataMt = plainDataMtList.get(i);
-            if(plainDataMt.getCmdType().equals("33")){
+            if("33".equals(plainDataMt.getCmdType())){
                 CmdParamData cmdParamData = (CmdParamData) plainDataMt.getCmdParams();
                 deliverData = cmdParamData.getOtaTradeNo() +
                         organizeCallControll(cmdParamData.getCallControl()) +
@@ -53,7 +53,7 @@ public class USSDPackServiceImpl implements USSDPackService {
                             cascadePushCommandCMD.getValue();
                 }
                 userData += plainDataMt.getCmdType() + getStrLength(deliverData) + deliverData;
-            }else if(plainDataMt.getCmdType().equals("31") || plainDataMt.getCmdType().equals("32")){
+            }else if("31".equals(plainDataMt.getCmdType()) || "32".equals(plainDataMt.getCmdType())){
                 CmdParamData cmdParamData = (CmdParamData) plainDataMt.getCmdParams();
                 //处理国家码 added by lushusheng
                 String bitMapMcc = "";

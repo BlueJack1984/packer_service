@@ -81,10 +81,16 @@ public class USSDUnpackServiceImpl implements USSDUnpackService {
                     || (msg.substring(SysConstants.CmdType_OFF, SysConstants.CipherText_OFF).equals("2"))
                     || (msg.substring(SysConstants.CmdType_OFF, SysConstants.CipherText_OFF).equals("3"))) {//Success POR
                 logger.info("成功POR解析");
+                msg = msg.trim();
                 PorMo porMo = new PorMo();
-                porMo.setImei(msg.substring(SysConstants.IMEI_OFF,
-                        SysConstants.IMEI_OFF + SysConstants.IMEI_LEN));
+                porMo.setImei(msg.substring(SysConstants.IMEI_OFF + 2,
+                        SysConstants.IMEI_OFF + SysConstants.IMEI_LEN - 1));
                 porMo.setOtaTradeNo(msg.substring(SysConstants.TRADE_ID_OFF, SysConstants.IMEI_OFF));
+                //在这里添加缺失属性
+                porMo.setUssdPre(msg.substring(0, SysConstants.USSDprefix_Len));
+                porMo.setAppletVersion(msg.substring(SysConstants.AppletVersion_OFF, SysConstants.CmdType_OFF));
+                porMo.setCmdParam(msg.substring(SysConstants.CipherText_OFF, msg.length() - 1));
+                porMo.setUssdSuffix(msg.substring(msg.length() -1, msg.length()));
                 baseMo = (BaseMo) porMo;
             } else if (baseMo.getCmdType().equals("9")) {//Retry POR
                 logger.info("成功RETRY POR解析");

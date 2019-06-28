@@ -1,6 +1,7 @@
 package com.iot.service.serviceImpl;
 
 import com.iot.constant.SysConstants;
+import com.iot.dao.IAssetSoftsimUsageDao.IAssetSoftsimUsageDao;
 import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
 import com.iot.dao.assetOrderDao.IAssetOrderDao;
 import com.iot.dao.deviceInitRecDao.IDeviceInitRecDao;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +46,10 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
     protected SelectOrderService selectOrderService;
     @Autowired
     private IAssetManageBusiDao assetManageBusiDao;
+    @Autowired
+    private IAssetSoftsimUsageDao assetSoftsimUsageDao;
 
+    @Transactional(rollbackFor = Exception.class)
     public String bipMsgHandleService(String msg) throws Exception{
         String SMS = "";
         //在这里把tradeNo抽取出来，保证主号副号一致
@@ -72,7 +77,8 @@ public class BipMsgHandleServiceImpl implements BipMsgHandleService {
                     updateOrderException(startedOrders.get(i).getOrderId());
                 }
             }
-            deviceInitRecDao.endRecord(deviceInitRec, "00000000000000000000",
+            assetSoftsimUsageDao.removeSeedIccidRecord(deviceInitRec);
+            assetSoftsimUsageDao.insertFormalIccidRecord(deviceInitRec, "00000000000000000000",
                     "2", null);
         }else if(baseMo.getCmdType().equals("30")){
             PositionMo positionMo = (PositionMo) baseMo;

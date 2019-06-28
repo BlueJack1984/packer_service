@@ -21,7 +21,7 @@ import java.io.IOException;
  * @description
  */
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/lu")
 @RequiredArgsConstructor
 @Slf4j
 public class LUController {
@@ -31,7 +31,7 @@ public class LUController {
     private final HttpServletResponse response;
     private final IOrderService orderService;
 
-    @PostMapping("/handle")
+    @PostMapping("/luMsgHandle")
     public String orderHandle() {
 
         String requestMessage = "";

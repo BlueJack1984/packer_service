@@ -6,5 +6,5 @@ package com.iot.service.interfaces;
  * @date 2019-06-18
  */
 public interface IOrderService {
-    String handle(String requestMessage);
+    String handle(String requestMessage) throws Exception;
 }
