@@ -1,8 +1,9 @@
-package com.iot.otaBean.AAA;
+package com.iot.otaBean.locationUpdateInstruction;
 
 import com.iot.otaBean.base.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -13,7 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AAA extends BaseModel {
+@EqualsAndHashCode(callSuper = false)
+public class LocationUpdateInstruction extends BaseModel {
 
     /**
      *主号
