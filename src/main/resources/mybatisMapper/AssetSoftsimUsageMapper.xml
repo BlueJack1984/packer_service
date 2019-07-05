@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iot.dao.IAssetSoftsimUsageDao.IAssetSoftsimUsageDao">
-	<!--<resultMap id="assetSoftsimUsageMap" type="AssetSoftsimUsage">-->
+	<!--<resultMap id="assetSoftsimUsageMap" type="assetSoftsimUsage">-->
 	<!--</resultMap>-->
 	<!--<select id="queryAssetSoftsimUsage" resultMap="assetSoftsimUsageMap"-->
 		<!--parameterType="String">-->

@@ -13,6 +13,7 @@ import com.iot.otaBean.assetOrder.AssetOrder;
 import com.iot.otaBean.assetOrderSoftsimUsage.AssetOrderSoftsimUsage;
 import com.iot.otaBean.cmdTypeEnum.CmdTypeEnum;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
+import com.iot.otaBean.luInformation.LUInformation;
 import com.iot.otaBean.mo.PositionMo;
 import com.iot.otaBean.mt.CmdParamData;
 import com.iot.otaBean.mt.MtData;
@@ -387,5 +388,55 @@ public class SelectNumberServiceImpl implements SelectNumberService {
         SelectLocalSoftSimResponse response = (SelectLocalSoftSimResponse) JsonUtil.getDTO(responseStr, SelectLocalSoftSimResponse.class);
         //checkAndSaveError(selectSoftsimUrl,requestStr,responseStr);
         return response;
+    }
+
+
+    /**
+     * 针对旅游卡的选副号服务
+     */
+    @Override
+    public PlainDataMt selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception {
+        String simIccid = "";
+        String simImsi = "";
+        SelectLocalSoftSimResponse response = null;
+        if(null == assetOrder) {
+            logger.info("assetOrder查询为空");
+            return null;
+        }
+        List<AssetOrderSoftsimUsage> orderSoftsimUsageList = assetOrderSoftsimUsageDao.getList(iccid, assetOrder.getOrderId());
+        if(null == orderSoftsimUsageList || orderSoftsimUsageList.size() < 1) {
+            response = selectLocalSoftSim(assetOrder.getOrderId(), mcc);
+            if(response == null || response.getError() == null || response.getRespData() == null || response.getRespData().getSimIccid() == null ||response.getRespData().getSimImsi() == null){
+                logger.info("调用选择副号接口错误，未返回副号信息");
+                return null;
+            }
+            simIccid = response.getRespData().getSimIccid();
+            simImsi = response.getRespData().getSimImsi();
+        }else if(orderSoftsimUsageList.size() > 1) {
+            logger.info("查询到的订单数量大于一个");
+            return null;
+        }else {
+            //查询到正在使用的副号
+            AssetOrderSoftsimUsage assetOrderSoftsimUsage = orderSoftsimUsageList.get(0);
+            simIccid = assetOrderSoftsimUsage.getIccid();
+            simImsi = assetOrderSoftsimUsage.getImsi();
+        }
+        List<SoftSimResourceInfo> softSimResourceInfos = softSimResourceInfoDao.querySoftsimByIccid(simIccid);
+        if(1 != softSimResourceInfos.size()){
+            logger.error("iccid为" + simIccid + "的资源多于1个或者不存在！");
+            return null;
+        }
+        PlainDataMt plainDataMt = getAccessoryNumberObj(assetOrder, tradeNo, softSimResourceInfos.get(0),
+                new PositionMo(), simImsi, deviceInitRec);
+        return plainDataMt;
+    }
+
+    /**
+     * 获取副号
+     */
+    private PlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, LUInformation luInformation, String simImsi) {
+        PlainDataMt plainDataMt = new PlainDataMt();
+
+        return plainDataMt;
     }
 }

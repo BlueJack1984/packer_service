@@ -9,5 +9,18 @@ import java.util.List;
 @Mapper
 public interface IAssetOrderSoftsimUsageDao {
 
+    /**
+     *
+     * @param imei
+     * @param orderId
+     * @return
+     */
     List<AssetOrderSoftsimUsage> getList(@Param("imei") String imei, @Param("orderId") String orderId);
+
+    /**
+     *
+     * @param iccidList
+     * @return
+     */
+    List<AssetOrderSoftsimUsage> getListByIccids(@Param("iccidList") List<String> iccidList);
 }

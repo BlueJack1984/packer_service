@@ -1,21 +1,28 @@
 package com.iot.controller;
 
+import com.iot.dao.assetManageBusiDao.IAssetManageBusiDao;
+import com.iot.dao.deviceInitRecDao.IDeviceInitRecDao;
 import com.iot.io.request.LUInput;
-import com.iot.service.interfaces.IOrderService;
-import com.iot.util.RequestMessageUtil;
+import com.iot.otaBean.assetOrder.AssetOrder;
+import com.iot.otaBean.assetSoftsimUsage.AssetSoftsimUsage;
+import com.iot.otaBean.deviceInitRec.DeviceInitRec;
+import com.iot.otaBean.locationUpdateInstruction.LocationUpdateInstruction;
+import com.iot.otaBean.mt.MtData;
+import com.iot.otaBean.mt.PlainDataMt;
+import com.iot.service.interfaces.*;
+import com.iot.util.DateUtils;
+import com.packer.commons.sms.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 订单业务
@@ -29,44 +36,132 @@ import java.io.IOException;
 @Slf4j
 public class LUController {
 
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
-    private final IOrderService orderService;
+    private final LocationUpdateInstructionService instructionService;
+    private final AssetSoftsimUsageService assetSoftsimUsageService;
+    private final AssetOrderService assetOrderService;
+    private final PreStartOrderService preStartOrderService;
+    protected final SelectOrderService selectOrderService;
+    private final SelectNumberService selectNumberService;
+    private final IDeviceInitRecDao deviceInitRecDao;
+    private final IAssetManageBusiDao assetManageBusiDao;
 
     @PostMapping("/luMsgHandle")
-    public String LUHandle(@RequestBody @Valid LUInput luInput) {
+    public String LUHandle(@RequestBody @Valid LUInput luInput) throws Exception{
 
-        return null;
+        String SMS = "";
+        //查询location_position_instruction_t是否有写入下发要求
+        List<LocationUpdateInstruction> instructionList = instructionService.getList();
+        if(null != instructionList && instructionList.size() > 0) {
+            //这里设置订单为启用状态
+            //把checksum置位AA55下发副号信息
+            return handleOrderAndAccessoryImsi(instructionList);
+        }
+        String imsi = luInput.getImsi();
+        List<AssetSoftsimUsage> assetSoftsimUsageList = assetSoftsimUsageService.getListByImsi(imsi);
+        if(null == assetSoftsimUsageList || assetSoftsimUsageList.size() < 1) {
+            log.info("提示设备没有生产");
+            return null;
+        }
+        //取出所有旅游卡iccid
+        List<String> iccidList = new ArrayList<>();
+        for(AssetSoftsimUsage assetSoftsimUsage : assetSoftsimUsageList) {
+            String iccid = assetSoftsimUsage.getIccid();
+            if(null != iccid && ! "".equals(iccid)) {
+                iccidList.add(iccid);
+            }
+        }
+        //根据iccid列表查出订单列表
+        String mcc = luInput.getMccmnc();
+        AssetOrder assetOrder = getByIccid(iccidList, mcc);
+        if(null == assetOrder) {
+            log.info("无法判断订单，不能下发副号");
+            return null;
+        }
+        //设置订单为预启用状态，生成记录
+        String iccid = assetOrder.getAssetId();
+        String orderId = assetOrder.getOrderId();
+        String accessoryImsi = "";
+        String expectedFinishTime = assetOrder.getPlannedEndTime();
+        preStartOrderService.insert(iccid, imsi, orderId, accessoryImsi, expectedFinishTime);
+        //组织数据下发副号
 
-//        String requestMessage = "";
-//        try {
-//            //首先接收终端设备的位置更新信息LU（Location Update）
-//            requestMessage = RequestMessageUtil.getMessage(request, response);
-//            if((null == requestMessage) || ("".equals(requestMessage))) {
-//                log.info("bip请求报文为空！");
-//                return null;
-//            }
-//            log.info("bip请求报文：" + requestMessage);
-//            //检查通信协议版本号应该在6以上
-//            if(!checkProtocolVersionAndBipReq(requestMessage)){
-//                log.error("Protocol Version不匹配（协议版本需要6以上），退出！");
-//                return null;
-//            }
-//            String retData = orderService.handle(requestMessage);
-//            return retData;
-//        }catch (Exception ex) {
-//            log.error("接口调用异常！", ex);
-//            return null;
-//        }
+        return SMS;
     }
 
     /**
-     * @description 检查协议版本
-     * @return 返回协议版本为6及以上的布尔值true，反之返回false
-     * @throws IOException
+     *
+     * @param instructionList
+     * @return
      */
-    private boolean checkProtocolVersionAndBipReq(String requestMessage)throws Exception{
-        //这里根据请求信息判断协议版本号是否为6及以上
-        return true;
+    private String handleOrderAndAccessoryImsi(List<LocationUpdateInstruction> instructionList) throws Exception{
+        if(null == instructionList || instructionList.size() < 1) {
+            return null;
+        }
+        List<String> cache = new ArrayList<>();
+        for(LocationUpdateInstruction luInstruction: instructionList) {
+            String iccid = luInstruction.getIccid();
+            String mcc = luInstruction.getMcc();
+            if(null == iccid || null == mcc) {
+                continue;
+            }
+            String tradeNo = getOtaTradeNo();
+            //获取订单信息
+            AssetOrder assetOrder = selectOrderService.getOrder(iccid, mcc);
+            //选号码
+            PlainDataMt plainDataMt = selectNumberService.selectAccessoryNumber(tradeNo, assetOrder, iccid, mcc);
+            List<PlainDataMt> plainDatas = new ArrayList<>();
+            plainDatas.add(plainDataMt);
+                    MtData mtData = new MtData();
+            mtData.setPlainDatas(plainDatas);
+            SMS = ussdBusiServicePack.ussdBusiServicePack(mtData);
+            cache.add(SMS);
+        }
+
+        //设置订单为启用状态
+        //下发副号相关信息
+        return "";
+    }
+
+    /**
+     *
+     * @param iccidList
+     * @param mcc
+     * @return
+     */
+    private AssetOrder getByIccid(List<String> iccidList, String mcc) {
+        List<AssetOrder> cache = new ArrayList<>();
+        List<AssetOrder> list = assetOrderService.getListByIccids(iccidList);
+        for(AssetOrder assetOrder: list) {
+            String coverCountry = assetOrder.getCoverCountry();
+            if(null != coverCountry && coverCountry.contains(mcc)) {
+                cache.add(assetOrder);
+                if(cache.size() > 1) {
+                    return null;
+                }
+            }
+        }
+        if(cache.size() < 1) {
+            return null;
+        }
+        return cache.get(0);
+    }
+
+    /**
+     * 生成ota交易流水号
+     *
+     * @return
+     */
+    public String getOtaTradeNo() {
+        Long nextVal = assetManageBusiDao.getOtaTradeNo();
+        String tempId = Long.toString(nextVal);
+        if (tempId.length() > 6) {
+            tempId = tempId.substring(tempId.length() - 6, tempId.length());
+        } else {
+            tempId = StringUtil.paddingHeadZero(tempId, 6);
+        }
+
+        String sysTimeStr = DateUtils.format(new Date(), "yyyyMMddHHmmss");
+        String tradeId = sysTimeStr + tempId;
+        return tradeId;
     }
 }

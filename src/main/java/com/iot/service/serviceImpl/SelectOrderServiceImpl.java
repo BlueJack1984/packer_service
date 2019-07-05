@@ -2,6 +2,7 @@ package com.iot.service.serviceImpl;
 
 import com.iot.dao.assetOrderDao.IAssetOrderDao;
 import com.iot.otaBean.assetOrder.AssetOrder;
+import com.iot.otaBean.base.IccidMccPair;
 import com.iot.otaBean.deviceInitRec.DeviceInitRec;
 import com.iot.otaBean.mo.PositionMo;
 import com.iot.service.interfaces.SelectOrderService;
@@ -36,5 +37,21 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             return assetOrder;
         }
         return null;
+    }
+
+    /**
+     * @param iccid 旅游卡的iccid，等同于设备的imei
+     * @param mcc 覆盖国家范围
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public AssetOrder getOrder(String iccid, String mcc) throws Exception{
+        PositionMo positionMo = new PositionMo();
+        //针对旅游卡
+        positionMo.setImei(iccid);
+        positionMo.setMcc(mcc);
+        AssetOrder assetOrder = selectOrder(positionMo, null);
+        return assetOrder;
     }
 }

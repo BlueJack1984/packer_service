@@ -13,4 +13,9 @@ public interface SelectNumberService {
     public PlainDataMt selectLocalNumber(String tradeNo, AssetOrder assetOrder, PositionMo positionMo,
                                          DeviceInitRec deviceInitRec) throws Exception;
     public boolean checkMccAndDevice(String mcc, List<DeviceInitRec> deviceInitRecs);
+
+    /**
+     * 针对旅游卡的选副号服务
+     */
+    public PlainDataMt selectAccessoryNumber(String tradeNo, AssetOrder assetOrder, String iccid, String mcc) throws Exception;
 }
