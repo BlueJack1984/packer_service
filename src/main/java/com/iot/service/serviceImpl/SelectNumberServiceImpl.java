@@ -436,7 +436,7 @@ public class SelectNumberServiceImpl implements SelectNumberService {
      */
     private PlainDataMt getAccessoryNumberObj(AssetOrder assetOrder, String tradeNo, SoftSimResourceInfo softSimResourceInfo, LUInformation luInformation, String simImsi) {
         PlainDataMt plainDataMt = new PlainDataMt();
-
+        assetOrder.getPlannedEndTime();
         return plainDataMt;
     }
 }

@@ -42,7 +42,7 @@ public class LUController {
     private final PreStartOrderService preStartOrderService;
     protected final SelectOrderService selectOrderService;
     private final SelectNumberService selectNumberService;
-    private final IDeviceInitRecDao deviceInitRecDao;
+    private final USSDPackService ussdBusiServicePack;
     private final IAssetManageBusiDao assetManageBusiDao;
 
     @PostMapping("/luMsgHandle")
@@ -97,6 +97,7 @@ public class LUController {
         if(null == instructionList || instructionList.size() < 1) {
             return null;
         }
+        String SMS = "";
         List<String> cache = new ArrayList<>();
         for(LocationUpdateInstruction luInstruction: instructionList) {
             String iccid = luInstruction.getIccid();
